@@ -11,3 +11,28 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id             Int     @id @default(autoincrement())
+  email          String  @unique
+  nome           String
+  senhaHash      String  @map("senha_hash")
+  numeroTelefone String  @map("numero_telefone")
+  fotoPerfil     String? @map("foto_perfil")
+  posts          Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id                 Int      @id @default(autoincrement())
+  texto              String
+  imagem             String?
+  criadoEm           DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  quantidadeCurtidas Int      @default(0) @map("quantidade_curtidas")
+  autorId            Int      @map("autor_id")
+  autor              User     @relation(fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@index([autorId])
+  @@map("posts")
+}
