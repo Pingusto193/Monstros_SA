@@ -1,0 +1,37 @@
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-tertiary);
+}
+
+.ok {
+  color: var(--color-success);
+}
+
+.bad {
+  color: var(--color-danger);
+}
+
+.checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  color: var(--color-text-tertiary);
+}
+
+.checklist li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--duration-base) ease;
+}
+
+.checkIcon {
+  opacity: 0.35;
+  transition: opacity var(--duration-base) ease;
+}
+
+.checklist .ok .checkIcon {
+  opacity: 1;
+}

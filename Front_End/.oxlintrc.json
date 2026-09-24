@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    // role="list" é intencional: o Safari/VoiceOver remove a semântica de listas com list-style: none.
+    "jsx-a11y/no-redundant-roles": "off",
+    // role="status" / "search" / "img" / "group" são ARIA válidos; a regra apenas sugere tags equivalentes.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // Os rótulos dos cards de tema têm o texto alguns níveis abaixo do <label>.
+    "jsx-a11y/label-has-associated-control": ["warn", { "depth": 4 }]
+  }
+}

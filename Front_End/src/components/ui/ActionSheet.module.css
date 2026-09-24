@@ -1,0 +1,43 @@
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-md);
+  color: var(--color-text);
+  transition: background-color var(--duration-fast) ease;
+}
+
+.action:hover {
+  background: var(--color-surface-2);
+}
+
+.action:focus-visible {
+  outline-offset: -3px;
+}
+
+.action svg {
+  color: var(--color-text-secondary);
+}
+
+.danger,
+.danger svg {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.cancel {
+  color: var(--color-text-secondary);
+}

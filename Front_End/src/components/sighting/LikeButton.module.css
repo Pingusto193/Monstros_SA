@@ -1,0 +1,43 @@
+.like {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  transition:
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.like:hover {
+  color: var(--color-text-secondary);
+}
+
+.like:active {
+  transform: scale(0.9);
+}
+
+.liked,
+.liked:hover {
+  color: var(--color-like);
+}
+
+.pop {
+  animation: like-pop 460ms var(--ease-spring);
+}
+
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.78);
+  }
+  60% {
+    transform: scale(1.24);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

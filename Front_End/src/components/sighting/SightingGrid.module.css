@@ -1,0 +1,100 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    gap: 6px;
+  }
+}
+
+.tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--color-image-bg);
+}
+
+@media (min-width: 768px) {
+  .tile {
+    border-radius: var(--radius-sm);
+  }
+}
+
+.tile:focus-visible {
+  outline-offset: -3px;
+}
+
+.label {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 22px var(--space-2) 7px;
+  background: linear-gradient(to bottom, transparent, rgba(8, 11, 9, 0.62));
+  color: #fff;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 479px) {
+  .label {
+    display: none;
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  background: rgba(8, 11, 9, 0.45);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--text-md);
+  opacity: 0;
+  transition: opacity var(--duration-base) ease;
+  pointer-events: none;
+}
+
+.overlay > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (hover: hover) {
+  .tile:hover .overlay {
+    opacity: 1;
+  }
+}
+
+.tile:focus-visible .overlay {
+  opacity: 1;
+}
+
+.skeleton {
+  aspect-ratio: 1;
+}
+
+@media (min-width: 768px) {
+  .skeleton {
+    border-radius: var(--radius-sm) !important;
+  }
+}

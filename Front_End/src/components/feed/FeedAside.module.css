@@ -1,0 +1,147 @@
+.aside {
+  display: none;
+}
+
+@media (min-width: 1160px) {
+  .aside {
+    position: sticky;
+    top: var(--space-10);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    width: var(--aside-width);
+    flex-shrink: 0;
+  }
+}
+
+.me {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.meText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 650;
+}
+
+.username:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-tertiary);
+}
+
+.textLink {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--color-primary);
+}
+
+.textLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--color-primary) 14%, transparent), transparent 60%),
+    var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.ctaIcon {
+  color: var(--color-primary);
+}
+
+.ctaTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.ctaText {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+.sectionTitle {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--color-text-secondary);
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 6px var(--space-2);
+  margin: 0 calc(-1 * var(--space-2));
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) ease;
+}
+
+a.person:hover {
+  background: var(--color-surface-2);
+}
+
+.personText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.personName {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 650;
+}
+
+.personMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.footer {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  line-height: var(--leading-relaxed);
+}

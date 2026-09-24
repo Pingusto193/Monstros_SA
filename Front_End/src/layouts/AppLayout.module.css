@@ -1,0 +1,32 @@
+.shell {
+  min-height: 100dvh;
+}
+
+.column {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .column {
+    padding-left: var(--rail-width);
+  }
+}
+
+@media (min-width: 1280px) {
+  .column {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+.main {
+  min-height: calc(100dvh - var(--mobile-header-height));
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + var(--space-8));
+  outline: none;
+}
+
+@media (min-width: 768px) {
+  .main {
+    min-height: 100dvh;
+    padding-bottom: var(--space-12);
+  }
+}
