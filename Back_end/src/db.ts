@@ -4,9 +4,10 @@ import { config } from './config.ts';
 
 function sslOptions() {
   if (config.databaseCa) return { ca: config.databaseCa };
-  // O Supabase exige TLS e usa uma CA própria, fora da lista padrão do Node.
-  // Para verificar a cadeia completa, informe o certificado em DATABASE_CA.
-  if (/supabase\.(co|com)/.test(config.databaseUrl)) return { rejectUnauthorized: false };
+  // Endereços externos do Render (e do Supabase) exigem TLS. Pela rede interna do Render
+  // (URL sem domínio público) a conexão é local e dispensa TLS.
+  // Para verificar a cadeia completa do certificado, informe-o em DATABASE_CA.
+  if (/render\.com|supabase\.(co|com)/.test(config.databaseUrl)) return { rejectUnauthorized: false };
   return undefined;
 }
 

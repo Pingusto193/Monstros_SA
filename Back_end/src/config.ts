@@ -19,7 +19,7 @@ export const config = {
   databaseUrl: required('DATABASE_URL'),
   /** Conexões simultâneas com o banco (o banco local do `prisma dev` só aceita 1). */
   databasePoolMax: Number(process.env.DATABASE_POOL_MAX ?? 5),
-  /** Certificado CA do banco (opcional). Sem ele, conexões ao Supabase usam TLS sem verificar a cadeia. */
+  /** Certificado CA do banco (opcional). Sem ele, conexões externas (Render/Supabase) usam TLS sem verificar a cadeia. */
   databaseCa: process.env.DATABASE_CA?.replace(/\\n/g, '\n'),
   /** Origens do front-end autorizadas pelo CORS, separadas por vírgula. */
   corsOrigins: list(process.env.CORS_ORIGIN, ['http://localhost:5173']),

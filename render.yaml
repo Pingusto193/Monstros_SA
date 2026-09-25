@@ -1,28 +1,42 @@
-# Blueprint do Render: cria a API e o site de uma vez.
-# No painel do Render: New → Blueprint → escolha este repositório.
-# Os valores marcados com "sync: false" são pedidos na hora da criação.
+# Blueprint do Render: cria o banco, a API e o site de uma vez.
+# No painel do Render: New → Blueprint → escolha este repositório → Apply.
+#
+# Atenção: o PostgreSQL gratuito do Render expira 30 dias após a criação
+# (depois disso é preciso migrar para um plano pago ou os dados são apagados).
+
+databases:
+  - name: rastro-db
+    plan: free
+    region: virginia
+    databaseName: rastro
+    user: rastro
+    # Acesso só pela rede interna do Render (a API). Nada exposto na internet.
+    ipAllowList: []
+
 services:
-  # API (Back_end) — Express + Prisma, ligada ao PostgreSQL do Supabase
+  # API (Back_end) — Express + Prisma
   - type: web
     name: rastro-api
     runtime: node
     plan: free
     region: virginia
-    # Cria/atualiza as tabelas. O site publicado começa vazio (sem dados de exemplo).
-    buildCommand: npm ci && npx prisma migrate deploy
-    startCommand: npm start
+    buildCommand: npm ci
+    # As migrações rodam na inicialização, que tem acesso à rede interna do banco.
+    # O site publicado começa vazio (sem dados de exemplo).
+    startCommand: npx prisma migrate deploy && npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: "24"
       - key: NODE_ENV
         value: production
-      # URI do "Session pooler" do Supabase (porta 5432)
       - key: DATABASE_URL
-        sync: false
-      # Endereço do site, ex.: https://rastro-web.onrender.com
+        fromDatabase:
+          name: rastro-db
+          property: connectionString
+      # Endereço do site. Se o Render criar outro endereço, ajuste aqui (ou em Environment).
       - key: CORS_ORIGIN
-        sync: false
+        value: https://rastro-web.onrender.com
 
   # Site (Front_End) — build estático do Vite
   - type: web
@@ -34,9 +48,10 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "24"
-      # Endereço da API, ex.: https://rastro-api.onrender.com
+      # Endereço da API. Se o Render criar outro endereço, ajuste aqui (ou em Environment)
+      # e publique de novo o site ("Clear build cache & deploy").
       - key: VITE_API_URL
-        sync: false
+        value: https://rastro-api.onrender.com
     routes:
       # SPA: qualquer caminho (/perfil/victor, /explorar…) abre o index.html
       - type: rewrite
