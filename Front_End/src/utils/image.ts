@@ -27,14 +27,35 @@ export interface ProcessedImage {
   height: number;
 }
 
+interface ResizeOptions {
+  maxSize: number;
+  quality?: number;
+  square?: boolean;
+}
+
 /**
- * Redimensiona e comprime uma imagem no navegador (canvas → JPEG).
+ * Redimensiona e comprime uma imagem no navegador (canvas → JPEG), devolvendo data URL.
  * A orientação EXIF já é aplicada pelos navegadores modernos ao desenhar a imagem.
  */
-export async function resizeImageFile(
+export async function resizeImageFile(file: File, options: ResizeOptions): Promise<ProcessedImage> {
+  const { canvas, width, height } = await drawResized(file, options);
+  return { dataUrl: canvas.toDataURL('image/jpeg', options.quality ?? 0.82), width, height };
+}
+
+/** Mesma compressão, mas como arquivo (Blob) — usado no envio para a API. */
+export async function resizeImageToBlob(
   file: File,
-  options: { maxSize: number; quality?: number; square?: boolean },
-): Promise<ProcessedImage> {
+  options: ResizeOptions,
+): Promise<{ blob: Blob; width: number; height: number }> {
+  const { canvas, width, height } = await drawResized(file, options);
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/jpeg', options.quality ?? 0.82),
+  );
+  if (!blob) throw new Error('Não foi possível processar a imagem.');
+  return { blob, width, height };
+}
+
+async function drawResized(file: File, options: ResizeOptions) {
   const objectUrl = URL.createObjectURL(file);
   try {
     const image = await loadImage(objectUrl);
@@ -67,7 +88,7 @@ export async function resizeImageFile(
     context.fillRect(0, 0, width, height);
     context.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
 
-    return { dataUrl: canvas.toDataURL('image/jpeg', options.quality ?? 0.82), width, height };
+    return { canvas, width, height };
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
@@ -79,9 +100,11 @@ function isUnsplash(url: URL): boolean {
   return url.hostname === 'images.unsplash.com';
 }
 
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
+
 /**
- * Aceita apenas URLs de imagem previsíveis: https, caminhos do próprio app, data URLs de imagem
- * e blob: (pré-visualização local de um arquivo escolhido pela pessoa).
+ * Aceita apenas URLs de imagem previsíveis: https, http só em localhost (API local),
+ * caminhos do próprio app, data URLs de imagem e blob: (pré-visualização local).
  */
 export function isSafeImageUrl(url: string | null | undefined): url is string {
   if (!url) return false;
@@ -89,7 +112,8 @@ export function isSafeImageUrl(url: string | null | undefined): url is string {
   if (url.startsWith('blob:')) return url.startsWith(`blob:${window.location.origin}/`);
   if (url.startsWith('/')) return !url.startsWith('//');
   try {
-    return new URL(url).protocol === 'https:';
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' || (parsed.protocol === 'http:' && LOCAL_HOSTS.has(parsed.hostname));
   } catch {
     return false;
   }

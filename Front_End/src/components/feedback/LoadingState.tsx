@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { LogoMark } from '@/components/brand/Logo';
 import { Spinner } from '@/components/ui/Spinner';
 import styles from './Feedback.module.css';
@@ -13,10 +14,27 @@ export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
 
 /** Tela cheia exibida enquanto a sessão salva é verificada. */
 export function SplashScreen() {
+  // Servidores gratuitos "dormem" quando ficam parados; a primeira resposta pode demorar.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
     <div className={styles.splash} role="status">
-      <LogoMark size={52} className={styles.splashMark} />
-      <span className="sr-only">Carregando o Rastro…</span>
+      <div className={styles.splashContent}>
+        <LogoMark size={52} className={styles.splashMark} />
+        {slow ? (
+          <p className={styles.splashText}>
+            Acordando o servidor…
+            <br />
+            Na primeira visita isso pode levar até um minuto.
+          </p>
+        ) : (
+          <span className="sr-only">Carregando o Rastro…</span>
+        )}
+      </div>
     </div>
   );
 }

@@ -2,16 +2,19 @@
 
 Rede social para **registrar, visualizar e compartilhar avistamentos do Pé Grande**.
 
-Nesta etapa a aplicação roda 100% no navegador com **dados mockados**. O banco de dados
-(Prisma + PostgreSQL, já esboçado na raiz do repositório) será conectado na próxima etapa —
-a arquitetura foi feita para essa troca não exigir mudanças nas telas.
+O site funciona em dois modos, sem nenhuma mudança nas telas:
+
+- **Modo API** (com `VITE_API_URL`): usa a API do `Back_end` e o banco PostgreSQL — é o modo publicado.
+- **Modo mock** (sem `VITE_API_URL`): tudo roda no navegador, com dados de exemplo no `localStorage`.
+  Útil para mexer no visual sem precisar da API.
 
 ## Como rodar
 
 ```bash
 cd Front_End
 npm install
-npm run dev          # http://localhost:5173
+npm run dev                                          # modo mock — http://localhost:5173
+VITE_API_URL=http://localhost:3333 npm run dev       # modo API (suba a API antes; ver README da raiz)
 ```
 
 | Script              | O que faz                                   |
@@ -32,8 +35,11 @@ Tudo funciona, exceto a captura de GPS, que o navegador só libera em HTTPS ou `
 | `victor@rastro.app` | `pegada123` |
 
 Todos os usuários de exemplo (`marina@rastro.app`, `lucas@rastro.app`, `helena@rastro.app`…) usam a
-mesma senha. Contas, publicações, curtidas e comentários novos ficam salvos **neste navegador**.
-Para voltar ao estado inicial: **Configurações → Conta e segurança → Restaurar dados de demonstração**.
+mesma senha — nos dois modos (no modo API eles vêm do `npm run db:seed`).
+
+- **Modo mock:** tudo o que for criado fica salvo **neste navegador**. Para voltar ao estado inicial:
+  Configurações → Conta e segurança → Restaurar dados de demonstração.
+- **Modo API:** os dados ficam no banco. Para recriar os exemplos: `npm run db:reset-demo` (na raiz).
 
 ## Stack
 
@@ -68,7 +74,7 @@ src/
 Regra do projeto: **páginas e componentes nunca importam `src/mocks`**. Todo acesso a dados passa
 pelos hooks, que chamam os serviços de `src/services`.
 
-## Autenticação mockada
+## Autenticação no modo mock
 
 - Login e cadastro são validados na tela e validados de novo no serviço (`utils/validation.ts`).
 - Senhas são guardadas **apenas como hash** com salt (`utils/crypto/password.ts`) — nunca em texto puro.
@@ -85,52 +91,26 @@ pelos hooks, que chamam os serviços de `src/services`.
   (`rastro:db:*`). As gravações são transacionais: se o armazenamento encher, nada fica pela metade.
 - Fotos enviadas pelo usuário são redimensionadas no navegador (máx. 1080 px, JPEG) antes de salvar.
 
-## Como conectar o backend
+## Conexão com o backend
 
-1. Criar no `Back_end` as rotas descritas em `src/services/contracts.ts` (cada método traz o
-   endpoint sugerido no comentário, ex.: `GET /sightings/feed?cursor=&limit=`).
-2. Criar `src/services/http/` com implementações `fetch` das mesmas interfaces, enviando o token do
-   `tokenStorage` no cabeçalho `Authorization`:
+A troca entre os modos acontece em um único arquivo, `src/services/index.ts`:
 
-   ```ts
-   export const httpSightingService: SightingService = {
-     async getFeed({ cursor, limit }) {
-       const response = await fetch(`${import.meta.env.VITE_API_URL}/sightings/feed?cursor=${cursor ?? ''}&limit=${limit ?? ''}`, {
-         headers: { Authorization: `Bearer ${tokenStorage.get()}` },
-       });
-       if (!response.ok) throw await toAppError(response); // { code, message, fieldErrors }
-       return response.json();
-     },
-     // ...demais métodos
-   };
-   ```
+- `src/services/contracts.ts` — as interfaces (o "contrato" de cada serviço).
+- `src/services/http/` — implementação que chama a API (`apiClient.ts` envia o token da sessão e
+  converte os erros `{ code, message, fieldErrors }` em `AppError`).
+- `src/services/mock/` — implementação local (localStorage).
 
-3. Trocar as atribuições em `src/services/index.ts` e definir `demoAccount` e `demoData` como `null`.
-4. Responder erros no formato `{ code, message, fieldErrors }` (códigos em `services/errors.ts`) —
-   a interface já sabe exibir cada um.
-
-Nenhuma página, componente ou hook precisa ser alterado.
-
-## Relação com o `prisma/schema.prisma` atual
-
-| Front (mock)                 | Prisma            |
-| ---------------------------- | ----------------- |
-| `UserRecord.name`            | `User.nome`       |
-| `UserRecord.passwordHash`    | `User.senhaHash`  |
-| `UserRecord.avatarUrl`       | `User.fotoPerfil` |
-| `SightingRecord.description` | `Post.texto`      |
-| `SightingRecord.photoUrl`    | `Post.imagem`     |
-| `SightingRecord.createdAt`   | `Post.criadoEm`   |
-| `SightingRecord.likeCount`   | `Post.quantidadeCurtidas` |
-| `SightingRecord.authorId`    | `Post.autorId`    |
-
-O schema ainda **não** tem campos que o app usa: `User.username` (único), `User.bio`, `User.createdAt`;
-no `Post`: local, cidade, estado/região, país, latitude/longitude/precisão, data e horário do
-avistamento, largura/altura da foto; e as tabelas de comentários, curtidas (par usuário + post único)
-e sessões (se não usar JWT). Ele também exige `numeroTelefone`, que o cadastro atual não pede —
-decidir na etapa do banco se o telefone entra no cadastro ou vira opcional.
+Fotos: no modo API, a imagem é comprimida no navegador (máx. 1080 px, JPEG) e enviada para
+`POST /uploads`; a API guarda no banco e devolve a URL.
 
 ## Variáveis de ambiente
 
-Veja `.env.example`. Hoje só existe `VITE_MOCK_LATENCY` (1 = latência realista, 0 = respostas
-instantâneas); `VITE_API_URL` fica reservada para a etapa do backend.
+Veja `.env.example`:
+
+| Variável                 | Para que serve                                                          |
+| ------------------------ | ----------------------------------------------------------------------- |
+| `VITE_API_URL`           | endereço da API; sem ela, modo mock                                     |
+| `VITE_SHOW_DEMO_ACCOUNT` | `true` mostra a conta de demonstração no login também no modo API       |
+| `VITE_MOCK_LATENCY`      | latência simulada no modo mock (1 = realista, 0 = instantâneo)          |
+
+No Render, `VITE_API_URL` é definida no serviço `rastro-web` (ver `render.yaml` na raiz).

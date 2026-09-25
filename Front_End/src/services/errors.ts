@@ -8,7 +8,24 @@ export type AppErrorCode =
   | 'FORBIDDEN'
   | 'STORAGE_FULL'
   | 'INVALID_FILE'
+  | 'RATE_LIMITED'
+  | 'NETWORK'
   | 'UNKNOWN';
+
+export const APP_ERROR_CODES: readonly AppErrorCode[] = [
+  'INVALID_CREDENTIALS',
+  'EMAIL_TAKEN',
+  'USERNAME_TAKEN',
+  'VALIDATION',
+  'NOT_FOUND',
+  'UNAUTHORIZED',
+  'FORBIDDEN',
+  'STORAGE_FULL',
+  'INVALID_FILE',
+  'RATE_LIMITED',
+  'NETWORK',
+  'UNKNOWN',
+];
 
 /**
  * Erro de domínio padronizado. A futura API deve responder com o mesmo `code`

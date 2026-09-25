@@ -1,22 +1,47 @@
 {
   "name": "monstros_sa",
   "version": "1.0.0",
-  "description": "",
+  "description": "Rastro — API (Back_end) e banco de dados (Prisma + PostgreSQL)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch Back_end/src/server.ts",
+    "start": "tsx Back_end/src/server.ts",
+    "typecheck": "tsc -p Back_end",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset-demo": "tsx prisma/seed.ts --force"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^24.13.6",
     "nodemon": "^3.1.14",
-    "prisma": "^7.9.1"
+    "typescript": "~6.0.2"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
-    "pg": "^8.23.0"
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.4.0",
+    "pg": "^8.23.0",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.5"
+  },
+  "engines": {
+    "node": ">=22.12"
   }
 }

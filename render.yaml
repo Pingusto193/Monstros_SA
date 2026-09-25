@@ -1,0 +1,48 @@
+# Blueprint do Render: cria a API e o site de uma vez.
+# No painel do Render: New → Blueprint → escolha este repositório.
+# Os valores marcados com "sync: false" são pedidos na hora da criação.
+services:
+  # API (Back_end) — Express + Prisma, ligada ao PostgreSQL do Supabase
+  - type: web
+    name: rastro-api
+    runtime: node
+    plan: free
+    region: virginia
+    # Cria/atualiza as tabelas e, se o banco estiver vazio, carrega os dados de exemplo.
+    buildCommand: npm ci && npx prisma migrate deploy && npm run db:seed
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      # URI do "Session pooler" do Supabase (porta 5432)
+      - key: DATABASE_URL
+        sync: false
+      # Endereço do site, ex.: https://rastro-web.onrender.com
+      - key: CORS_ORIGIN
+        sync: false
+
+  # Site (Front_End) — build estático do Vite
+  - type: web
+    name: rastro-web
+    runtime: static
+    rootDir: Front_End
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # Endereço da API, ex.: https://rastro-api.onrender.com
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      # SPA: qualquer caminho (/perfil/victor, /explorar…) abre o index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

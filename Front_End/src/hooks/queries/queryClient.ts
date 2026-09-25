@@ -22,8 +22,9 @@ export const queryClient = new QueryClient({
       staleTime: 30_000,
       gcTime: 5 * 60_000,
       refetchOnWindowFocus: false,
+      // Só vale tentar de novo quando a falha pode ser passageira (rede ou servidor).
       retry: (failureCount, error) => {
-        if (isAppError(error) && ['NOT_FOUND', 'UNAUTHORIZED', 'FORBIDDEN'].includes(error.code)) return false;
+        if (isAppError(error) && !['NETWORK', 'UNKNOWN'].includes(error.code)) return false;
         return failureCount < 2;
       },
     },
