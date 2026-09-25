@@ -36,7 +36,7 @@ services:
           property: connectionString
       # Endereço do site. Se o Render criar outro endereço, ajuste aqui (ou em Environment).
       - key: CORS_ORIGIN
-        value: https://rastro-web.onrender.com
+        value: https://rastro-web-t402.onrender.com
 
   # Site (Front_End) — build estático do Vite
   - type: web
@@ -51,7 +51,7 @@ services:
       # Endereço da API. Se o Render criar outro endereço, ajuste aqui (ou em Environment)
       # e publique de novo o site ("Clear build cache & deploy").
       - key: VITE_API_URL
-        value: https://rastro-api.onrender.com
+        value: https://rastro-api-376w.onrender.com
     routes:
       # SPA: qualquer caminho (/perfil/victor, /explorar…) abre o index.html
       - type: rewrite
