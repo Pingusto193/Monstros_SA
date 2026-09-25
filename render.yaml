@@ -8,8 +8,8 @@ services:
     runtime: node
     plan: free
     region: virginia
-    # Cria/atualiza as tabelas e, se o banco estiver vazio, carrega os dados de exemplo.
-    buildCommand: npm ci && npx prisma migrate deploy && npm run db:seed
+    # Cria/atualiza as tabelas. O site publicado começa vazio (sem dados de exemplo).
+    buildCommand: npm ci && npx prisma migrate deploy
     startCommand: npm start
     healthCheckPath: /health
     envVars:

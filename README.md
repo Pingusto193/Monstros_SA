@@ -36,14 +36,15 @@ VITE_API_URL=http://localhost:3333 npm run dev
 Banco local sem Docker: `npx prisma dev --name rastro` mostra uma URL "TCP" para usar no `DATABASE_URL`
 (com `DATABASE_POOL_MAX=1`).
 
-Conta de exemplo: `victor@rastro.app` / `pegada123` (todos os usuários de exemplo usam a mesma senha).
+Conta de exemplo (só no modo mock e em bancos locais com `npm run db:seed`): `victor@rastro.app` / `pegada123`.
 
 ## Colocar no ar (Supabase + Render)
 
 1. **Banco (Supabase):** crie um projeto em supabase.com (região São Paulo). Em **Connect → Session pooler**
    copie a URI (porta 5432) e troque `[YOUR-PASSWORD]` pela senha do banco.
-2. **Tabelas e dados:** não precisa fazer nada — a cada deploy o Render aplica as migrações e, se o banco
-   estiver vazio, carrega os dados de exemplo (`npm run db:seed`).
+2. **Tabelas:** não precisa fazer nada — a cada deploy o Render aplica as migrações. O site publicado
+   começa **vazio**, só com usuários reais. (Os dados de exemplo — `npm run db:seed` — são só para
+   desenvolvimento; não rode esse comando com a URI do Supabase de produção.)
 3. **Hospedagem (Render):** em render.com, **New → Blueprint** e escolha este repositório.
    O `render.yaml` cria dois serviços:
    - `rastro-api` — peça `DATABASE_URL` (a mesma URI do Supabase) e `CORS_ORIGIN` (endereço do site).
